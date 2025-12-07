@@ -15,8 +15,8 @@ let gameState = {
     distance: 0,
     energy: 100,
     speed: 0,
-    maxSpeed: 14,
-    baseSpeed: 3,
+    maxSpeed: 12,
+    baseSpeed: 2.5,
     time: 0,
     correctChoices: 0,
     totalStations: 7,
@@ -481,10 +481,26 @@ function update(deltaTime) {
     // Check for stations (skip first one - triggered at start)
     track.stations.forEach((station, index) => {
         if (index === 0) return; // Pre-start handled separately
-        if (!station.triggered && gameState.distance >= station.km - 0.3 && gameState.distance <= station.km + 0.5) {
-            station.triggered = true;
-            gameState.currentStation = index;
-            showNutritionPopup(station.phase, index);
+
+        // Last station (finish) triggers at exactly 50km
+        if (index === 6) {
+            if (!station.triggered && gameState.distance >= 50) {
+                station.triggered = true;
+                gameState.currentStation = index;
+                gameState.paused = true;
+                finishMode = true;
+                fireworks = []; // Reset fireworks
+                // Show popup after short delay for fireworks
+                setTimeout(() => {
+                    showNutritionPopup(station.phase, index);
+                }, 2000);
+            }
+        } else {
+            if (!station.triggered && gameState.distance >= station.km - 0.3 && gameState.distance <= station.km + 0.5) {
+                station.triggered = true;
+                gameState.currentStation = index;
+                showNutritionPopup(station.phase, index);
+            }
         }
     });
 
@@ -590,7 +606,8 @@ function selectNutrition(product, stationIndex) {
 
     // Posledna stanica = koniec hry
     if (stationIndex === 6) {
-        setTimeout(() => endGame(true), 1000);
+        finishMode = false; // Stop fireworks
+        setTimeout(() => endGame(true), 1500);
     } else {
         gameState.paused = false;
     }
@@ -605,6 +622,156 @@ function showFeedback(text, color) {
     feedbackText = text;
     feedbackColor = color;
     feedbackTimer = 2000; // 2 sekundy
+}
+
+// Fireworks for finish
+let fireworks = [];
+let finishMode = false;
+
+function createFirework(x, y) {
+    const colors = ['#ff0000', '#ffff00', '#00ff00', '#00ffff', '#ff00ff', '#ff6600', '#ffffff'];
+    const particles = [];
+    for (let i = 0; i < 20; i++) {
+        particles.push({
+            x: x,
+            y: y,
+            vx: (Math.random() - 0.5) * 8,
+            vy: (Math.random() - 0.5) * 8 - 2,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            life: 60 + Math.random() * 40
+        });
+    }
+    return particles;
+}
+
+function updateFireworks() {
+    // Spawn new fireworks randomly
+    if (finishMode && Math.random() < 0.1) {
+        const newFw = createFirework(
+            100 + Math.random() * 600,
+            50 + Math.random() * 150
+        );
+        fireworks.push(...newFw);
+    }
+
+    // Update particles
+    fireworks = fireworks.filter(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.15; // gravity
+        p.life--;
+        return p.life > 0;
+    });
+}
+
+function drawFireworks() {
+    fireworks.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.life / 100;
+        ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+    });
+    ctx.globalAlpha = 1;
+}
+
+// Draw podium scene
+function drawPodium() {
+    // Sky
+    ctx.fillStyle = '#1a1a4e';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Stars
+    ctx.fillStyle = '#ffffff';
+    for (let i = 0; i < 50; i++) {
+        const sx = (i * 73) % canvas.width;
+        const sy = (i * 37) % 200;
+        ctx.fillRect(sx, sy, 2, 2);
+    }
+
+    // Ground/snow
+    ctx.fillStyle = '#e0e8f0';
+    ctx.fillRect(0, 380, canvas.width, 120);
+
+    // Podium
+    // 2nd place (left)
+    ctx.fillStyle = '#c0c0c0';
+    ctx.fillRect(200, 320, 120, 80);
+    ctx.fillStyle = '#000';
+    ctx.font = '20px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText('2', 260, 360);
+
+    // 1st place (center) - PLAYER!
+    ctx.fillStyle = '#ffd700';
+    ctx.fillRect(340, 280, 120, 120);
+    ctx.fillStyle = '#000';
+    ctx.fillText('1', 400, 330);
+
+    // 3rd place (right)
+    ctx.fillStyle = '#cd7f32';
+    ctx.fillRect(480, 340, 120, 60);
+    ctx.fillStyle = '#000';
+    ctx.fillText('3', 540, 375);
+
+    // Player on 1st place podium
+    drawSkierOnPodium(400, 260);
+
+    // ENERVIT banner
+    ctx.fillStyle = '#ff6600';
+    ctx.fillRect(250, 50, 300, 60);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(250, 50, 300, 60);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '24px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText('ENERVIT', 400, 90);
+
+    // JIZERSKA 50 text
+    ctx.fillStyle = '#003399';
+    ctx.fillRect(280, 130, 240, 40);
+    ctx.fillStyle = '#ffcc00';
+    ctx.font = '16px "Press Start 2P"';
+    ctx.fillText('JIZERSKA 50', 400, 158);
+
+    // Confetti/fireworks
+    drawFireworks();
+
+    // CIL text
+    ctx.fillStyle = '#00ff00';
+    ctx.font = '14px "Press Start 2P"';
+    ctx.fillText('VITEJ V CILI!', 400, 220);
+    ctx.fillText('Vyber si regeneraci...', 400, 240);
+}
+
+// Draw skier standing on podium
+function drawSkierOnPodium(x, y) {
+    // Legs
+    ctx.fillStyle = '#000080';
+    ctx.fillRect(x - 8, y + 5, 6, 25);
+    ctx.fillRect(x + 2, y + 5, 6, 25);
+
+    // Body (Enervit orange)
+    ctx.fillStyle = '#ff6600';
+    ctx.fillRect(x - 12, y - 20, 24, 27);
+
+    // Arms up (celebrating!)
+    ctx.fillStyle = '#ffcc99';
+    ctx.fillRect(x - 20, y - 35, 8, 20);
+    ctx.fillRect(x + 12, y - 35, 8, 20);
+
+    // Head
+    ctx.fillStyle = '#ffcc99';
+    ctx.fillRect(x - 6, y - 35, 12, 14);
+
+    // Helmet
+    ctx.fillStyle = '#ff6600';
+    ctx.fillRect(x - 8, y - 42, 16, 10);
+
+    // Happy face
+    ctx.fillStyle = '#000';
+    ctx.fillRect(x - 4, y - 32, 2, 2);
+    ctx.fillRect(x + 2, y - 32, 2, 2);
+    ctx.fillRect(x - 3, y - 26, 6, 2);
 }
 
 // Flash screen effect
@@ -722,6 +889,13 @@ function drawJizerskaLogo(x, y) {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // If finish mode, draw podium instead of track
+    if (finishMode) {
+        updateFireworks();
+        drawPodium();
+        return;
+    }
+
     drawTrack();
 
     // Draw approaching stations
@@ -824,8 +998,8 @@ function startGame() {
         distance: 0,
         energy: 80, // Start with less energy - need good nutrition!
         speed: 0,
-        maxSpeed: 14,
-        baseSpeed: 3,
+        maxSpeed: 12,
+        baseSpeed: 2.5,
         time: 0,
         correctChoices: 0,
         totalStations: 7,
@@ -849,6 +1023,8 @@ function startGame() {
     track.offset = 0;
     feedbackText = '';
     feedbackTimer = 0;
+    finishMode = false;
+    fireworks = [];
     initTrees();
     initStations();
     initCompetitors();
