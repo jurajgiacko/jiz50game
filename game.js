@@ -43,8 +43,21 @@ let track = {
     offset: 0,
     trees: [],
     stations: [],
-    obstacles: []
+    obstacles: [],
+    competitors: []
 };
+
+// Competitor colors (different jerseys)
+const competitorColors = [
+    { body: '#ff0000', helmet: '#cc0000' }, // Red
+    { body: '#00aa00', helmet: '#008800' }, // Green
+    { body: '#0066ff', helmet: '#0044cc' }, // Blue
+    { body: '#ffff00', helmet: '#cccc00' }, // Yellow
+    { body: '#ff00ff', helmet: '#cc00cc' }, // Pink
+    { body: '#00ffff', helmet: '#00cccc' }, // Cyan
+    { body: '#ffffff', helmet: '#cccccc' }, // White
+    { body: '#333333', helmet: '#111111' }  // Black
+];
 
 // Enervit nutrition products - spravne pro ruzne faze zavodu
 const nutritionProducts = {
@@ -123,6 +136,65 @@ function initTrees() {
             type: Math.floor(Math.random() * 3)
         });
     }
+}
+
+// Initialize competitors
+function initCompetitors() {
+    track.competitors = [];
+    // Create competitors that will spawn during the race
+    for (let i = 0; i < 20; i++) {
+        track.competitors.push({
+            lane: Math.floor(Math.random() * 3), // 0, 1, 2
+            y: -100 - Math.random() * 2000, // Start off screen, spread out
+            speed: 2 + Math.random() * 3, // Slower than player
+            color: competitorColors[Math.floor(Math.random() * competitorColors.length)],
+            active: true,
+            passed: false
+        });
+    }
+}
+
+// Draw competitor (other skier)
+function drawCompetitor(comp, screenY) {
+    const x = 300 + comp.lane * 100;
+    const y = screenY;
+
+    // Skis
+    ctx.fillStyle = '#8B4513';
+    ctx.fillRect(x - 20, y + 20, 40, 5);
+
+    // Legs
+    ctx.fillStyle = '#000080';
+    ctx.fillRect(x - 6, y + 5, 5, 17);
+    ctx.fillRect(x + 1, y + 5, 5, 17);
+
+    // Body (colored jersey)
+    ctx.fillStyle = comp.color.body;
+    ctx.fillRect(x - 8, y - 10, 16, 17);
+
+    // Arms
+    ctx.fillStyle = '#ffcc99';
+    ctx.fillRect(x - 14, y - 6, 8, 4);
+    ctx.fillRect(x + 6, y - 6, 8, 4);
+
+    // Poles
+    ctx.fillStyle = '#333333';
+    ctx.fillRect(x - 16, y - 8, 2, 35);
+    ctx.fillRect(x + 14, y - 8, 2, 35);
+
+    // Head
+    ctx.fillStyle = '#ffcc99';
+    ctx.fillRect(x - 5, y - 20, 10, 10);
+
+    // Helmet
+    ctx.fillStyle = comp.color.helmet;
+    ctx.fillRect(x - 6, y - 24, 12, 6);
+
+    // Number on back
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '6px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText(Math.floor(Math.random() * 99 + 1).toString(), x, y);
 }
 
 // Initialize stations
@@ -416,6 +488,40 @@ function update(deltaTime) {
         }
     });
 
+    // Update competitors
+    track.competitors.forEach(comp => {
+        if (!comp.active) return;
+
+        // Move competitor down (we're passing them)
+        comp.y += (gameState.speed - comp.speed) * 0.5;
+
+        // Check collision with player
+        const compScreenY = 200 + comp.y;
+        const compX = 300 + comp.lane * 100;
+        const playerX = player.x;
+
+        // Collision detection
+        if (comp.lane === player.lane &&
+            compScreenY > player.y - 40 &&
+            compScreenY < player.y + 30 &&
+            Math.abs(compX - playerX) < 30) {
+
+            // Bump! Slow down
+            gameState.speed = Math.max(2, gameState.speed - 5);
+            gameState.energy = Math.max(5, gameState.energy - 5);
+            comp.y += 50; // Push competitor away
+            showFeedback('NARAZ! -5 rychlost', '#ff0000');
+            flashScreen('#ff0000');
+        }
+
+        // Reset competitor if too far below screen
+        if (compScreenY > 600) {
+            comp.y = -200 - Math.random() * 500;
+            comp.lane = Math.floor(Math.random() * 3);
+            comp.speed = 2 + Math.random() * 3;
+        }
+    });
+
     // Update feedback timer
     if (feedbackTimer > 0) {
         feedbackTimer -= deltaTime;
@@ -625,6 +731,15 @@ function draw() {
         }
     });
 
+    // Draw competitors
+    track.competitors.forEach(comp => {
+        if (!comp.active) return;
+        const screenY = 200 + comp.y;
+        if (screenY > -50 && screenY < 500) {
+            drawCompetitor(comp, screenY);
+        }
+    });
+
     drawSkier();
 
     // Draw energy warning
@@ -736,6 +851,7 @@ function startGame() {
     feedbackTimer = 0;
     initTrees();
     initStations();
+    initCompetitors();
 
     document.getElementById('start-screen').classList.add('hidden');
     document.getElementById('end-screen').classList.add('hidden');
