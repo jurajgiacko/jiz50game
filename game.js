@@ -15,14 +15,15 @@ let gameState = {
     distance: 0,
     energy: 100,
     speed: 0,
-    maxSpeed: 35,
-    baseSpeed: 15,
+    maxSpeed: 25,
+    baseSpeed: 8,
     time: 0,
     correctChoices: 0,
-    totalStations: 5,
+    totalStations: 7,
     currentStation: 0,
     speedBoost: 0,
-    gameOver: false
+    gameOver: false,
+    phase: 'pre' // pre, race, post
 };
 
 // Player (skier)
@@ -47,41 +48,62 @@ let track = {
 
 // Enervit nutrition products - spravne pro ruzne faze zavodu
 const nutritionProducts = {
-    // PRE-RACE (pred zavodem)
-    preRace: [
-        { name: "ENERVIT PRE SPORT", desc: "Energie pred vykonem", correct: true, boost: 1.2 },
-        { name: "ENERVIT AFTER SPORT", desc: "Regenerace po vykonu", correct: false, boost: 0.5 },
-        { name: "ENERVIT PROTEIN BAR", desc: "Proteinova tycinka", correct: false, boost: 0.7 }
+    // PRED STARTEM (km 0)
+    preStart: [
+        { name: "ENERVIT PRE SPORT", desc: "Energie pred vykonem - sacharidy", correct: true, boost: 2 },
+        { name: "ENERVIT AFTER SPORT", desc: "Regenerace po vykonu", correct: false, boost: -3 },
+        { name: "ENERVIT PROTEIN BAR", desc: "Proteinova tycinka - tezke traveni", correct: false, boost: -1 }
     ],
-    // DURING RACE - early (0-20km)
-    earlyRace: [
-        { name: "ENERVIT GEL", desc: "Rychla energie", correct: true, boost: 1.3 },
-        { name: "ENERVIT ISOTONIC", desc: "Izotonicka doplnek", correct: true, boost: 1.2 },
-        { name: "ENERVIT AFTER SPORT", desc: "Regenerace po vykonu", correct: false, boost: 0.4 }
+    // STATION 1 (km 8) - zacatek zavodu
+    station1: [
+        { name: "ENERVIT ISOTONIC", desc: "Doplneni tekutin a mineralu", correct: true, boost: 2 },
+        { name: "ENERVIT GEL", desc: "Rychla energie", correct: true, boost: 1.5 },
+        { name: "ENERVIT R2 SPORT", desc: "Regeneracni napoj - prilis brzy!", correct: false, boost: -2 }
     ],
-    // DURING RACE - mid (20-35km)
-    midRace: [
-        { name: "ENERVIT GEL COMPETITION", desc: "Soutezni gel s kofeinem", correct: true, boost: 1.4 },
-        { name: "ENERVIT CARBO BAR", desc: "Sacharidova tycinka", correct: true, boost: 1.2 },
-        { name: "ENERVIT PROTEIN SHAKE", desc: "Proteinovy napoj", correct: false, boost: 0.6 }
+    // STATION 2 (km 16)
+    station2: [
+        { name: "ENERVIT GEL", desc: "Rychla energie 25g sacharidu", correct: true, boost: 2 },
+        { name: "ENERVIT CARBO BAR", desc: "Sacharidova tycinka", correct: true, boost: 1.5 },
+        { name: "ENERVIT PROTEIN SHAKE", desc: "Protein - spatne nacasovani", correct: false, boost: -2 }
     ],
-    // DURING RACE - late (35-50km)
-    lateRace: [
-        { name: "ENERVIT GEL + KOFEIN", desc: "Energie s kofeinem", correct: true, boost: 1.5 },
-        { name: "ENERVIT SPORT GEL", desc: "Sportovni gel", correct: true, boost: 1.3 },
-        { name: "ENERVIT RECOVERY DRINK", desc: "Regeneracni napoj", correct: false, boost: 0.5 }
+    // STATION 3 (km 25) - pulka zavodu
+    station3: [
+        { name: "ENERVIT GEL COMPETITION", desc: "Gel s kofeinem - boost!", correct: true, boost: 3 },
+        { name: "ENERVIT ISOTONIC", desc: "Doplneni mineralu", correct: true, boost: 1.5 },
+        { name: "ENERVIT AFTER SPORT", desc: "Regenerace - jeste ne!", correct: false, boost: -3 }
     ],
-    // POST RACE (po zavode)
+    // STATION 4 (km 33)
+    station4: [
+        { name: "ENERVIT GEL + KOFEIN", desc: "Energie + kofein na finish", correct: true, boost: 2.5 },
+        { name: "ENERVIT GEL", desc: "Rychla energie", correct: true, boost: 2 },
+        { name: "ENERVIT RECOVERY DRINK", desc: "Regenerace - prilis brzy", correct: false, boost: -2 }
+    ],
+    // STATION 5 (km 42) - posledni obcerstveni
+    station5: [
+        { name: "ENERVIT GEL COMPETITION", desc: "Posledni davka energie!", correct: true, boost: 3 },
+        { name: "ENERVIT SPORT GEL", desc: "Sportovni gel", correct: true, boost: 2 },
+        { name: "ENERVIT PROTEIN BAR", desc: "Tezke na zaludek pred cilem", correct: false, boost: -2 }
+    ],
+    // PO ZAVODE (km 50) - v cili
     postRace: [
-        { name: "ENERVIT AFTER SPORT", desc: "Regenerace po vykonu", correct: true, boost: 1.0 },
-        { name: "ENERVIT R2 SPORT", desc: "Kompletni regenerace", correct: true, boost: 1.0 },
-        { name: "ENERVIT PRE SPORT", desc: "Pred vykonem", correct: false, boost: 0.3 }
+        { name: "ENERVIT R2 SPORT", desc: "Kompletni regenerace - SPRAVNE!", correct: true, boost: 0 },
+        { name: "ENERVIT AFTER SPORT", desc: "Regenerace po vykonu", correct: true, boost: 0 },
+        { name: "ENERVIT PRE SPORT", desc: "Pred vykonem? Uz je po!", correct: false, boost: 0 }
     ]
 };
 
-// Station positions (km)
-const stationPositions = [5, 15, 25, 35, 45];
-const stationPhases = ['preRace', 'earlyRace', 'midRace', 'lateRace', 'postRace'];
+// Station positions (km) - 7 stanic: pred start, 5 behem, po cili
+const stationPositions = [0, 8, 16, 25, 33, 42, 50];
+const stationPhases = ['preStart', 'station1', 'station2', 'station3', 'station4', 'station5', 'postRace'];
+const stationNames = [
+    'PRED STARTEM - Priprav se!',
+    'KM 8 - Prvni obcerstveni',
+    'KM 16 - Tretina zavodu',
+    'KM 25 - PULKA ZAVODU!',
+    'KM 33 - Posledni tretina',
+    'KM 42 - Pred cilem!',
+    'CIL! - Regenerace'
+];
 
 // Input handling
 let keys = {
@@ -384,18 +406,19 @@ function update(deltaTime) {
     // Track movement
     track.offset += gameState.speed * 0.1;
 
-    // Check for stations
+    // Check for stations (skip first one - triggered at start)
     track.stations.forEach((station, index) => {
-        if (!station.triggered && gameState.distance >= station.km - 0.1 && gameState.distance <= station.km + 0.5) {
+        if (index === 0) return; // Pre-start handled separately
+        if (!station.triggered && gameState.distance >= station.km - 0.3 && gameState.distance <= station.km + 0.5) {
             station.triggered = true;
             gameState.currentStation = index;
             showNutritionPopup(station.phase, index);
         }
     });
 
-    // Check win/lose
-    if (gameState.distance >= 50) {
-        endGame(true);
+    // Update feedback timer
+    if (feedbackTimer > 0) {
+        feedbackTimer -= deltaTime;
     }
 
     if (gameState.energy <= 0) {
@@ -419,15 +442,6 @@ function showNutritionPopup(phase, stationIndex) {
     // Shuffle products
     const shuffled = [...products].sort(() => Math.random() - 0.5);
 
-    // Station info
-    const stationNames = [
-        'START - Pred zavodem',
-        'KM 15 - Prvni obcerstveni',
-        'KM 25 - Pulka zavodu',
-        'KM 35 - Posledni tlak',
-        'KM 45 - Pred cilem'
-    ];
-
     document.querySelector('.station-info').textContent = stationNames[stationIndex];
 
     optionsContainer.innerHTML = '';
@@ -439,7 +453,7 @@ function showNutritionPopup(phase, stationIndex) {
             <span class="product-name">${product.name}</span>
             <span class="product-desc">${product.desc}</span>
         `;
-        btn.onclick = () => selectNutrition(product);
+        btn.onclick = () => selectNutrition(product, stationIndex);
         optionsContainer.appendChild(btn);
     });
 
@@ -447,26 +461,44 @@ function showNutritionPopup(phase, stationIndex) {
 }
 
 // Select nutrition
-function selectNutrition(product) {
+function selectNutrition(product, stationIndex) {
     const popup = document.getElementById('nutrition-popup');
     popup.classList.add('hidden');
 
     if (product.correct) {
         gameState.correctChoices++;
-        gameState.speedBoost += 3;
-        gameState.energy = Math.min(100, gameState.energy + 30);
+        gameState.speedBoost += product.boost;
+        gameState.energy = Math.min(100, gameState.energy + 25);
 
         // Flash green
         flashScreen('#00ff00');
+        showFeedback('SPRAVNA VOLBA! +' + product.boost + ' rychlost', '#00ff00');
     } else {
-        gameState.speedBoost -= 5;
-        gameState.energy = Math.max(10, gameState.energy - 20);
+        gameState.speedBoost += product.boost; // boost is negative for wrong choices
+        gameState.energy = Math.max(10, gameState.energy - 15);
 
         // Flash red
         flashScreen('#ff0000');
+        showFeedback('SPATNA VOLBA! ' + product.boost + ' rychlost', '#ff0000');
     }
 
-    gameState.paused = false;
+    // Posledna stanica = koniec hry
+    if (stationIndex === 6) {
+        setTimeout(() => endGame(true), 1000);
+    } else {
+        gameState.paused = false;
+    }
+}
+
+// Show feedback text
+let feedbackText = '';
+let feedbackColor = '';
+let feedbackTimer = 0;
+
+function showFeedback(text, color) {
+    feedbackText = text;
+    feedbackColor = color;
+    feedbackTimer = 2000; // 2 sekundy
 }
 
 // Flash screen effect
@@ -508,17 +540,19 @@ function endGame(won) {
         title.textContent = 'CILOVA CARA!';
         title.style.color = '#00ff00';
 
-        if (gameState.correctChoices >= 4) {
-            message.textContent = 'SKVELE! Jsi nutricni profik!';
+        if (gameState.correctChoices >= 6) {
+            message.textContent = 'PERFEKTNI! Jsi nutricni mistr Jizerske 50!';
+        } else if (gameState.correctChoices >= 4) {
+            message.textContent = 'SKVELE! Mas dobre znalosti vyzivove strategie!';
         } else if (gameState.correctChoices >= 2) {
-            message.textContent = 'Dobre! Priste vyber lepe.';
+            message.textContent = 'Dobre! Priste vyber lepe - spravna vyziva = lepsi cas!';
         } else {
-            message.textContent = 'Dosel jsi do cile, ale vyziva nebyla optimalni.';
+            message.textContent = 'Dosel jsi do cile, ale vyziva byla katastrofa!';
         }
     } else {
         title.textContent = 'VYSILENI!';
         title.style.color = '#ff0000';
-        message.textContent = 'Spatna vyziva te pripravila o energii!';
+        message.textContent = 'Spatna vyziva te pripravila o energii! Naucse spravne doplnovat!';
     }
 
     const minutes = Math.floor(gameState.time / 60000);
@@ -551,6 +585,25 @@ function draw() {
         ctx.textAlign = 'center';
         ctx.fillText('! NIZKA ENERGIE !', canvas.width / 2, 50);
         ctx.globalAlpha = 1;
+    }
+
+    // Draw feedback text
+    if (feedbackTimer > 0) {
+        ctx.fillStyle = feedbackColor;
+        ctx.globalAlpha = Math.min(1, feedbackTimer / 500);
+        ctx.font = '16px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText(feedbackText, canvas.width / 2, 80);
+        ctx.globalAlpha = 1;
+    }
+
+    // Draw current speed boost indicator
+    if (gameState.speedBoost !== 0) {
+        ctx.fillStyle = gameState.speedBoost > 0 ? '#00ff00' : '#ff0000';
+        ctx.font = '10px "Press Start 2P"';
+        ctx.textAlign = 'right';
+        const boostText = gameState.speedBoost > 0 ? '+' + gameState.speedBoost.toFixed(1) : gameState.speedBoost.toFixed(1);
+        ctx.fillText('BOOST: ' + boostText, canvas.width - 20, 480);
     }
 }
 
@@ -598,18 +651,19 @@ document.addEventListener('keyup', (e) => {
 function startGame() {
     gameState = {
         running: true,
-        paused: false,
+        paused: true, // Start paused for pre-race nutrition
         distance: 0,
-        energy: 100,
+        energy: 80, // Start with less energy - need good nutrition!
         speed: 0,
-        maxSpeed: 35,
-        baseSpeed: 15,
+        maxSpeed: 25,
+        baseSpeed: 8,
         time: 0,
         correctChoices: 0,
-        totalStations: 5,
+        totalStations: 7,
         currentStation: 0,
         speedBoost: 0,
-        gameOver: false
+        gameOver: false,
+        phase: 'pre'
     };
 
     player = {
@@ -624,12 +678,20 @@ function startGame() {
     };
 
     track.offset = 0;
+    feedbackText = '';
+    feedbackTimer = 0;
     initTrees();
     initStations();
 
     document.getElementById('start-screen').classList.add('hidden');
     document.getElementById('end-screen').classList.add('hidden');
     document.getElementById('game-screen').classList.remove('hidden');
+
+    // Show pre-start nutrition selection immediately
+    track.stations[0].triggered = true;
+    setTimeout(() => {
+        showNutritionPopup('preStart', 0);
+    }, 500);
 }
 
 // Event listeners
