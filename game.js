@@ -15,8 +15,8 @@ let gameState = {
     distance: 0,
     energy: 100,
     speed: 0,
-    maxSpeed: 18,
-    baseSpeed: 4,
+    maxSpeed: 14,
+    baseSpeed: 3,
     time: 0,
     correctChoices: 0,
     totalStations: 7,
@@ -562,6 +562,56 @@ function endGame(won) {
     document.getElementById('correct-choices').textContent = gameState.correctChoices;
 }
 
+// Draw ENERVIT logo (retro 98 style) - right side
+function drawEnervitLogo(x, y) {
+    // Orange background box
+    ctx.fillStyle = '#ff6600';
+    ctx.fillRect(x, y, 70, 35);
+
+    // Border 98 style
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, 70, 35);
+    ctx.strokeStyle = '#cc5500';
+    ctx.strokeRect(x + 2, y + 2, 66, 31);
+
+    // ENERVIT text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 10px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText('ENERVIT', x + 35, y + 22);
+}
+
+// Draw JIZERSKA 50 logo (retro 98 style) - left side
+function drawJizerskaLogo(x, y) {
+    // Blue background box
+    ctx.fillStyle = '#003399';
+    ctx.fillRect(x, y, 75, 45);
+
+    // Border 98 style
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, 75, 45);
+    ctx.strokeStyle = '#001a66';
+    ctx.strokeRect(x + 2, y + 2, 71, 41);
+
+    // JIZ text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 8px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText('JIZERSKA', x + 37, y + 18);
+
+    // 50 big
+    ctx.fillStyle = '#ffcc00';
+    ctx.font = 'bold 14px "Press Start 2P"';
+    ctx.fillText('50', x + 37, y + 36);
+
+    // Snow decoration
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x + 5, y + 40, 8, 3);
+    ctx.fillRect(x + 62, y + 40, 8, 3);
+}
+
 // Draw game
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -601,10 +651,14 @@ function draw() {
     if (gameState.speedBoost !== 0) {
         ctx.fillStyle = gameState.speedBoost > 0 ? '#00ff00' : '#ff0000';
         ctx.font = '10px "Press Start 2P"';
-        ctx.textAlign = 'right';
+        ctx.textAlign = 'center';
         const boostText = gameState.speedBoost > 0 ? '+' + gameState.speedBoost.toFixed(1) : gameState.speedBoost.toFixed(1);
-        ctx.fillText('BOOST: ' + boostText, canvas.width - 20, 480);
+        ctx.fillText('BOOST: ' + boostText, canvas.width / 2, 480);
     }
+
+    // Draw logos
+    drawJizerskaLogo(10, 10);
+    drawEnervitLogo(720, 10);
 }
 
 // Game loop
@@ -655,8 +709,8 @@ function startGame() {
         distance: 0,
         energy: 80, // Start with less energy - need good nutrition!
         speed: 0,
-        maxSpeed: 18,
-        baseSpeed: 4,
+        maxSpeed: 14,
+        baseSpeed: 3,
         time: 0,
         correctChoices: 0,
         totalStations: 7,
