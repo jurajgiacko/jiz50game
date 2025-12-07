@@ -1044,10 +1044,79 @@ function startGame() {
 document.getElementById('start-btn').addEventListener('click', startGame);
 document.getElementById('restart-btn').addEventListener('click', startGame);
 
+// Mobile controls
+const btnLeft = document.getElementById('btn-left');
+const btnRight = document.getElementById('btn-right');
+const btnPush = document.getElementById('btn-push');
+
+// Touch events for mobile
+if (btnLeft) {
+    btnLeft.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        player.lane = Math.max(0, player.lane - 1);
+    });
+    btnLeft.addEventListener('click', () => {
+        player.lane = Math.max(0, player.lane - 1);
+    });
+}
+
+if (btnRight) {
+    btnRight.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        player.lane = Math.min(2, player.lane + 1);
+    });
+    btnRight.addEventListener('click', () => {
+        player.lane = Math.min(2, player.lane + 1);
+    });
+}
+
+if (btnPush) {
+    btnPush.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        if (!player.pushing && gameState.running && !gameState.paused) {
+            player.pushing = true;
+            player.pushFrame = 0;
+        }
+    });
+    btnPush.addEventListener('click', () => {
+        if (!player.pushing && gameState.running && !gameState.paused) {
+            player.pushing = true;
+            player.pushFrame = 0;
+        }
+    });
+}
+
+// Prevent scrolling on mobile when playing
+document.body.addEventListener('touchmove', (e) => {
+    if (gameState.running) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+// Resize canvas for mobile
+function resizeCanvas() {
+    const container = document.getElementById('game-screen');
+    if (window.innerWidth <= 820 && container) {
+        const hud = document.getElementById('hud');
+        const controls = document.getElementById('mobile-controls');
+        const hudHeight = hud ? hud.offsetHeight : 60;
+        const controlsHeight = controls ? controls.offsetHeight : 80;
+        const availableHeight = window.innerHeight - hudHeight - controlsHeight;
+
+        canvas.style.width = window.innerWidth + 'px';
+        canvas.style.height = availableHeight + 'px';
+    }
+}
+
+window.addEventListener('resize', resizeCanvas);
+window.addEventListener('orientationchange', resizeCanvas);
+
 // Initialize
 initTrees();
 initStations();
 requestAnimationFrame(gameLoop);
+resizeCanvas();
 
 console.log('ENERVIT x JIZERSKA 50 - Hra nactena!');
 console.log('Ovladani: SIPKY = smer, MEZERNIK = odraz');
+console.log('Mobile: Touch buttons');

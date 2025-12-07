@@ -2,7 +2,9 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>ENERVIT x JIZERSKA 50 - Nutricni Plan</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -58,6 +60,14 @@
                 </div>
             </div>
             <canvas id="game-canvas"></canvas>
+
+            <!-- Mobile Controls -->
+            <div id="mobile-controls">
+                <button id="btn-left" class="mobile-btn">◀</button>
+                <button id="btn-push" class="mobile-btn btn-push">ODRAZ</button>
+                <button id="btn-right" class="mobile-btn">▶</button>
+            </div>
+
             <div id="nutrition-popup" class="hidden">
                 <div class="popup-content retro-border">
                     <h3>ENERVIT STATION</h3>
