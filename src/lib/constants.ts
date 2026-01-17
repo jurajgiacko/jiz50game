@@ -1,4 +1,4 @@
-// JIŽ50 Game Constants
+// JIZ50 Game Constants
 
 // Canvas dimensions
 export const CANVAS_WIDTH = 800;
@@ -66,7 +66,8 @@ export const STATION_NAMES = [
 
 // Colors
 export const COLORS = {
-  enervitOrange: '#ff6600',
+  enervitRed: '#e40521',
+  enervitOrange: '#e40521', // Legacy alias
   jizerskaBlue: '#003399',
   sky: '#87ceeb',
   snow: '#f0f8ff',
@@ -91,6 +92,6 @@ export const FIREWORK_COLORS = [
 ];
 
 // Discount code
-export const DISCOUNT_CODE = 'JIZERSKA10';
-export const DISCOUNT_PERCENT = 10;
+export const DISCOUNT_CODE = 'FUELTHERACE15';
+export const DISCOUNT_PERCENT = 15;
 export const ENERVIT_SHOP_URL = 'https://www.enervit.cz';

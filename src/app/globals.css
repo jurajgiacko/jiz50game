@@ -4,6 +4,18 @@
   --background: #111827;
   --foreground: #ffffff;
   --font-retro: 'Press Start 2P', monospace;
+  /* Enervit brand colors from enervit.com */
+  --enervit-red: #e40521;
+  --enervit-red-light: #ff1a3a;
+  --enervit-red-dark: #b80419;
+  /* Legacy orange for backwards compatibility */
+  --enervit-orange: #e40521;
+  --enervit-orange-light: #ff1a3a;
+  --jiz-blue: #0066cc;
+  --jiz-gold: #ffd700;
+  --win98-gray: #c0c0c0;
+  --win98-dark: #808080;
+  --win98-light: #dfdfdf;
 }
 
 @theme inline {
@@ -22,6 +34,7 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -46,6 +59,7 @@ body {
 /* Touch action for mobile controls */
 button {
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Canvas pixel rendering */
@@ -54,50 +68,185 @@ canvas {
   image-rendering: crisp-edges;
 }
 
-/* Retro Windows 98 style buttons */
+/* Authentic Windows 98 style */
 .retro-button {
-  background: #c0c0c0;
-  border: 2px solid;
+  background: var(--win98-gray);
+  border: 3px solid;
   border-color: #ffffff #808080 #808080 #ffffff;
-  padding: 4px 8px;
+  box-shadow: inset 1px 1px 0 var(--win98-light), inset -1px -1px 0 #404040;
+  padding: 8px 16px;
   font-family: var(--font-retro), monospace;
   cursor: pointer;
+  color: #000;
+  font-weight: bold;
 }
 
 .retro-button:active {
   border-color: #808080 #ffffff #ffffff #808080;
+  box-shadow: inset -1px -1px 0 var(--win98-light), inset 1px 1px 0 #404040;
+}
+
+.retro-button:hover {
+  background: #d4d4d4;
+}
+
+/* Enervit Red button (brand color) */
+.retro-button-orange {
+  background: var(--enervit-red);
+  border: 3px solid;
+  border-color: var(--enervit-red-light) var(--enervit-red-dark) var(--enervit-red-dark) var(--enervit-red-light);
+  box-shadow: inset 1px 1px 0 #ff5566, inset -1px -1px 0 #8a0312;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.retro-button-orange:hover {
+  background: var(--enervit-red-light);
+}
+
+.retro-button-orange:active {
+  border-color: var(--enervit-red-dark) var(--enervit-red-light) var(--enervit-red-light) var(--enervit-red-dark);
+  box-shadow: inset -1px -1px 0 #ff5566, inset 1px 1px 0 #8a0312;
 }
 
 /* Retro window style */
 .retro-window {
-  background: #c0c0c0;
-  border: 2px solid;
+  background: var(--win98-gray);
+  border: 3px solid;
   border-color: #ffffff #808080 #808080 #ffffff;
+  box-shadow: inset 2px 2px 0 var(--win98-light), inset -2px -2px 0 #606060;
 }
 
 .retro-window-title {
   background: linear-gradient(90deg, #000080, #1084d0);
   color: white;
-  padding: 2px 4px;
+  padding: 4px 8px;
   font-weight: bold;
+  text-shadow: 1px 1px 0 #000;
+}
+
+/* Scanlines effect for retro CRT look */
+.scanlines {
+  position: relative;
+}
+
+.scanlines::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1) 0px,
+    rgba(0, 0, 0, 0.1) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+}
+
+/* Energy bar gradient */
+.energy-bar {
+  background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
+}
+
+/* Glowing text effects */
+.glow-orange,
+.glow-red {
+  text-shadow: 0 0 10px var(--enervit-red), 0 0 20px var(--enervit-red), 0 0 30px var(--enervit-red);
+}
+
+.glow-green {
+  text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+}
+
+.glow-red {
+  text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+}
+
+/* Logo styling */
+.logo-enervit {
+  background: linear-gradient(180deg, var(--enervit-red-light), var(--enervit-red));
+  border: 3px solid;
+  border-color: #ff5566 #8a0312 #8a0312 #ff5566;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.logo-jiz {
+  background: linear-gradient(180deg, #1a8cff, var(--jiz-blue));
+  border: 3px solid;
+  border-color: #4da6ff #004c99 #004c99 #4da6ff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+/* Product card styling */
+.product-card {
+  background: linear-gradient(180deg, #3f3f3f, #2a2a2a);
+  border: 2px solid;
+  border-color: #555 #222 #222 #555;
+  transition: all 0.15s ease;
+}
+
+.product-card:hover {
+  background: linear-gradient(180deg, #4a4a4a, #353535);
+  border-color: var(--enervit-orange) #cc5200 #cc5200 var(--enervit-orange);
+  transform: scale(1.02);
+}
+
+.product-card:active {
+  transform: scale(0.98);
+}
+
+/* Explanation overlay animation */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.explanation-overlay {
+  animation: fadeInScale 0.3s ease-out;
+}
+
+/* Progress bar for explanation timer */
+@keyframes shrinkWidth {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+.timer-bar {
+  animation: shrinkWidth var(--timer-duration, 5s) linear forwards;
 }
 
 /* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 16px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1f2937;
+  background: var(--win98-gray);
+  border: 1px solid #808080;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #4b5563;
-  border-radius: 6px;
+  background: var(--win98-gray);
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #6b7280;
+  background: #d4d4d4;
 }
 
 /* Animation for energy warning */
@@ -114,9 +263,56 @@ canvas {
   animation: pulse-warning 0.5s ease-in-out infinite;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 640px) {
+/* Mobile-first responsive design */
+@media (max-width: 480px) {
+  html {
+    font-size: 12px;
+  }
+
+  .retro-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
   html {
     font-size: 14px;
   }
+}
+
+@media (min-width: 769px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/* Safe area insets for iOS devices */
+@supports (padding: max(0px)) {
+  .safe-area-bottom {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Ensure full height on mobile browsers */
+html, body, #__next {
+  min-height: 100%;
+  min-height: 100dvh;
+}
+
+/* Fix for mobile viewport height */
+@supports (height: 100dvh) {
+  .h-screen, .min-h-screen {
+    height: 100dvh;
+    min-height: 100dvh;
+  }
+}
+
+/* Prevent iOS bounce/rubber band effect */
+html {
+  overscroll-behavior: none;
+}
+
+body {
+  overscroll-behavior-y: none;
 }

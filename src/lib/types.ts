@@ -1,4 +1,4 @@
-// JIŽ50 Game Types
+// JIZ50 Game Types
 
 export interface GameState {
   running: boolean;

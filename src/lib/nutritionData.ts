@@ -1,4 +1,4 @@
-// JIŽ50 Nutrition Products with Educational Explanations
+// JIZ50 Nutrition Products with Educational Explanations
 
 import type { NutritionProduct } from './types';
 

@@ -512,8 +512,11 @@ export function GameCanvas() {
       ref={canvasRef}
       width={CANVAS_WIDTH}
       height={CANVAS_HEIGHT}
-      className="w-full max-w-[800px] h-auto border-4 border-gray-800 rounded"
-      style={{ imageRendering: 'pixelated' }}
+      className="max-w-full max-h-full border-2 md:border-4 border-gray-700 rounded object-contain"
+      style={{
+        imageRendering: 'pixelated',
+        aspectRatio: `${CANVAS_WIDTH} / ${CANVAS_HEIGHT}`,
+      }}
     />
   );
 }

@@ -1,4 +1,4 @@
-// JIŽ50 Game Store (Zustand)
+// JIZ50 Game Store (Zustand)
 
 import { create } from 'zustand';
 import type {
