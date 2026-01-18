@@ -135,7 +135,7 @@ function drawFrameToCanvas(
           ctx.stroke();
           drawText(`ENERVIT ${p}`, cx, y, '#ffffff', 18);
         });
-        drawText('Vyber správnu výživu!', cx, cy + 180, '#ffffff', 14);
+        drawText('Vyber správnou výživu!', cx, cy + 180, '#ffffff', 14);
         break;
       case 3: // Correct choice
         drawText('✓', cx, cy - 80, '#22c55e', 80);
@@ -615,7 +615,7 @@ export default function PromoPage() {
       frames: [
         { time: '0-3s', content: 'Logo animácia', text: 'ENERVIT × JIZ50', durationSec: 3 },
         { time: '3-6s', content: 'Lyžiar na trati', text: 'FUEL THE RACE', durationSec: 3 },
-        { time: '6-10s', content: 'Výber produktov', text: 'Vyber správnu výživu!', durationSec: 4 },
+        { time: '6-10s', content: 'Výber produktov', text: 'Vyber správnou výživu!', durationSec: 4 },
         { time: '10-13s', content: 'Správna voľba', text: '✓ SPRÁVNE! +25 energie', durationSec: 3 },
         { time: '13-15s', content: 'CTA', text: 'ZAHRAJ SI TEĎ! 🎮', durationSec: 2 },
       ],
@@ -653,7 +653,7 @@ export default function PromoPage() {
 
     setIsGeneratingVideo(true);
     setVideoProgress(0);
-    setVideoStatus('Generujem video...');
+    setVideoStatus('Generuji video...');
 
     try {
       const scenario = reelsScenarios[activeReels];
@@ -664,7 +664,7 @@ export default function PromoPage() {
       const height = 1920;
       const fps = 30;
 
-      setVideoStatus('Pripravujem canvas...');
+      setVideoStatus('Připravuji canvas...');
       setVideoProgress(5);
 
       // Create video canvas
@@ -680,7 +680,7 @@ export default function PromoPage() {
         console.log('Font already loaded or not available');
       }
 
-      setVideoStatus('Spúšťam nahrávanie...');
+      setVideoStatus('Spouštím nahrávání...');
       setVideoProgress(10);
 
       // Setup MediaRecorder with WebM format (best browser support)
@@ -740,7 +740,7 @@ export default function PromoPage() {
         // Update progress
         const progress = 10 + (totalElapsed / totalDuration) * 85;
         setVideoProgress(Math.min(95, progress));
-        setVideoStatus(`Nahrávam: ${Math.round(totalElapsed)}s / ${totalDuration}s`);
+        setVideoStatus(`Nahrávám: ${Math.round(totalElapsed)}s / ${totalDuration}s`);
 
         // Check if we need to move to next frame
         if (elapsedInFrame >= frames[currentFrameIndex].durationSec) {
@@ -775,7 +775,7 @@ export default function PromoPage() {
       // Cleanup
       setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-      setVideoStatus('Hotovo! Video stiahnuté.');
+      setVideoStatus('Hotovo! Video stažené.');
       setVideoProgress(100);
 
       setTimeout(() => {
@@ -786,7 +786,7 @@ export default function PromoPage() {
 
     } catch (error) {
       console.error('Video generation error:', error);
-      setVideoStatus(`Chyba: ${error instanceof Error ? error.message : 'Neznáma chyba'}`);
+      setVideoStatus(`Chyba: ${error instanceof Error ? error.message : 'Neznámá chyba'}`);
       setVideoProgress(0);
       setTimeout(() => {
         setIsGeneratingVideo(false);
@@ -846,7 +846,7 @@ export default function PromoPage() {
       link.click();
     } catch (error) {
       console.error('Download failed:', error);
-      alert('Stiahnutie zlyhalo: ' + (error instanceof Error ? error.message : 'Neznáma chyba'));
+      alert('Stažení selhalo: ' + (error instanceof Error ? error.message : 'Neznámá chyba'));
     } finally {
       setIsDownloading(false);
     }
@@ -883,7 +883,7 @@ export default function PromoPage() {
       link.click();
     } catch (error) {
       console.error('Download failed:', error);
-      alert('Stiahnutie zlyhalo: ' + (error instanceof Error ? error.message : 'Neznáma chyba'));
+      alert('Stažení selhalo: ' + (error instanceof Error ? error.message : 'Neznámá chyba'));
     } finally {
       setIsDownloading(false);
     }
@@ -948,28 +948,28 @@ Nauč se to hrou! 🎮
     const captions: Record<ReelsVariant, string> = {
       'teaser': `🎿 FUEL THE RACE 🎮
 
-Nová retro hra kde sa naučíš správnu výživu pre JIZ50!
+Nová retro hra kde se naučíš správnou výživu pro JIZ50!
 
 ⚡ 50 km závod
 🎯 7 výživových stanic
-🏆 Vyber správne a dojeď do cíle!
+🏆 Vyber správně a dojeď do cíle!
 
 Link v bio 👆
 
 #FuelTheRace #Enervit #JIZ50 #RetroGame #Gaming`,
       'challenge': `⚡ VÝZVA: Kolik správnych voleb zvládneš? ⚡
 
-Môj výsledek: ${score} 🏆
+Můj výsledek: ${score} 🏆
 
-Překonal som hru FUEL THE RACE - virtuálnu JIZ50!
+Překonal jsem hru FUEL THE RACE - virtuální JIZ50!
 
-Skús to aj ty 👉 Link v bio
+Zkus to i ty 👉 Link v bio
 
 #FuelTheRace #Challenge #Enervit #JIZ50`,
       'howto': `🎮 Ako hrať FUEL THE RACE?
 
-1️⃣ Vyber správnu výživu na každej stanici
-2️⃣ Vyhni sa súperom na trati
+1️⃣ Vyber správnou výživu na každé stanici
+2️⃣ Vyhni se soupeřům na trati
 3️⃣ Dojeď do cíle s energiou!
 
 ✅ PRE SPORT pred štartom
@@ -996,7 +996,7 @@ Link v bio 👆
           FUEL THE RACE - Promo Generátor
         </h1>
         <p className="text-gray-400 text-center mb-6 font-mono text-sm">
-          Vytvor grafiky a videá pre sociálne siete
+          Vytvoř grafiky a videa pro sociální sítě
         </p>
 
         {/* Tab selector */}
@@ -1059,7 +1059,7 @@ Link v bio 👆
                   />
                 </div>
                 <div>
-                  <label className="text-gray-400 text-xs font-mono block mb-1">Hodnotenie:</label>
+                  <label className="text-gray-400 text-xs font-mono block mb-1">Hodnocení:</label>
                   <select
                     value={rating}
                     onChange={(e) => setRating(e.target.value)}
@@ -1099,7 +1099,7 @@ Link v bio 👆
                     </>
                   ) : (
                     <>
-                      📥 STIAHNUŤ PNG ({dimensions.width}×{dimensions.height})
+                      📥 STÁHNOUT PNG ({dimensions.width}×{dimensions.height})
                     </>
                   )}
                 </button>
@@ -1175,7 +1175,7 @@ Nauč se to hrou! 🎮
                       copied ? 'bg-green-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-white'
                     }`}
                   >
-                    {copied ? '✓ SKOPÍROVANÉ!' : '📋 KOPÍROVAŤ POPIS'}
+                    {copied ? '✓ ZKOPÍROVÁNO!' : '📋 KOPÍROVAT POPIS'}
                   </button>
                 </div>
               </div>
@@ -1216,7 +1216,7 @@ Nauč se to hrou! 🎮
                   />
                 </div>
                 <div>
-                  <label className="text-gray-400 text-xs font-mono block mb-1">Hodnotenie:</label>
+                  <label className="text-gray-400 text-xs font-mono block mb-1">Hodnocení:</label>
                   <select
                     value={rating}
                     onChange={(e) => setRating(e.target.value)}
@@ -1270,7 +1270,7 @@ Nauč se to hrou! 🎮
                         : 'bg-gray-700 hover:bg-gray-600 text-white'
                     }`}
                   >
-                    {isDownloading ? '⏳ Generujem...' : `📥 STIAHNUŤ FRAME ${activeReelsFrame + 1}`}
+                    {isDownloading ? '⏳ Generuji...' : `📥 STÁHNOUT FRAME ${activeReelsFrame + 1}`}
                   </button>
 
                   {/* Video generation button */}
@@ -1283,7 +1283,7 @@ Nauč se to hrou! 🎮
                         : 'bg-red-600 hover:bg-red-700 text-white'
                     }`}
                   >
-                    {isGeneratingVideo ? '⏳' : '🎬'} STIAHNUŤ VIDEO ({reelsScenarios[activeReels].duration})
+                    {isGeneratingVideo ? '⏳' : '🎬'} STÁHNOUT VIDEO ({reelsScenarios[activeReels].duration})
                   </button>
 
                   {/* Progress bar */}
@@ -1349,10 +1349,10 @@ Nauč se to hrou! 🎮
                 <div className="bg-green-900/20 border border-green-500/30 rounded p-3 mb-4">
                   <h4 className="text-green-400 font-mono text-xs mb-2">🎬 VIDEO GENERÁTOR:</h4>
                   <ul className="text-gray-300 text-xs space-y-1">
-                    <li>• Klikni "STIAHNUŤ VIDEO" pre hotové WebM</li>
-                    <li>• Video obsahuje všetky framy v správnom poradí</li>
-                    <li>• Rozlíšenie: 1080×1920 (optimálne pre Reels)</li>
-                    <li>• Pridaj hudbu v CapCut/InShot</li>
+                    <li>• Klikni "STÁHNOUT VIDEO" pro hotové WebM</li>
+                    <li>• Video obsahuje všechny snímky ve správném pořadí</li>
+                    <li>• Rozlišení: 1080×1920 (optimální pro Reels)</li>
+                    <li>• Přidej hudbu v CapCut/InShot</li>
                   </ul>
                 </div>
 
@@ -1362,28 +1362,28 @@ Nauč se to hrou! 🎮
                   <div className="bg-gray-900 rounded p-3 text-xs text-gray-300 font-mono max-h-32 overflow-y-auto whitespace-pre-wrap">
                     {activeReels === 'teaser' && `🎿 FUEL THE RACE 🎮
 
-Nová retro hra kde sa naučíš správnu výživu pre JIZ50!
+Nová retro hra kde se naučíš správnou výživu pro JIZ50!
 
 ⚡ 50 km závod
 🎯 7 výživových stanic
-🏆 Vyber správne a dojeď do cíle!
+🏆 Vyber správně a dojeď do cíle!
 
 Link v bio 👆
 
 #FuelTheRace #Enervit #JIZ50 #RetroGame #Gaming`}
                     {activeReels === 'challenge' && `⚡ VÝZVA: Kolik správnych voleb zvládneš? ⚡
 
-Môj výsledek: ${score} 🏆
+Můj výsledek: ${score} 🏆
 
-Překonal som hru FUEL THE RACE - virtuálnu JIZ50!
+Překonal jsem hru FUEL THE RACE - virtuální JIZ50!
 
-Skús to aj ty 👉 Link v bio
+Zkus to i ty 👉 Link v bio
 
 #FuelTheRace #Challenge #Enervit #JIZ50`}
                     {activeReels === 'howto' && `🎮 Ako hrať FUEL THE RACE?
 
-1️⃣ Vyber správnu výživu na každej stanici
-2️⃣ Vyhni sa súperom na trati
+1️⃣ Vyber správnou výživu na každé stanici
+2️⃣ Vyhni se soupeřům na trati
 3️⃣ Dojeď do cíle s energiou!
 
 ✅ PRE SPORT pred štartom
@@ -1401,7 +1401,7 @@ Link v bio 👆
                       copied ? 'bg-green-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-white'
                     }`}
                   >
-                    {copied ? '✓ SKOPÍROVANÉ!' : '📋 KOPÍROVAŤ POPIS'}
+                    {copied ? '✓ ZKOPÍROVÁNO!' : '📋 KOPÍROVAT POPIS'}
                   </button>
                 </div>
               </div>
@@ -1411,7 +1411,7 @@ Link v bio 👆
 
         {/* Footer */}
         <div className="mt-12 text-center text-gray-500 text-xs font-mono">
-          <p>Grafiky a videá sú optimalizované pre Instagram, Facebook a TikTok.</p>
+          <p>Grafiky a videa jsou optimalizované pro Instagram, Facebook a TikTok.</p>
           <p className="mt-1">Hra: <a href="/" className="text-red-400 hover:underline">jiz50.enervit.online</a></p>
         </div>
       </div>
@@ -1478,7 +1478,7 @@ function ReelsFrameContent({ variant, frameIndex, score, rating }: { variant: Re
             </div>
           ))}
         </div>
-        <p className="text-white text-xs mt-4">Vyber správnu výživu!</p>
+        <p className="text-white text-xs mt-4">Vyber správnou výživu!</p>
       </div>,
       // Frame 4: Correct choice
       <div key="t4" className="flex flex-col items-center justify-center h-full">
@@ -1652,7 +1652,7 @@ function ReelsFramePreview({ variant, frameIndex, score, rating }: { variant: Re
             </div>
           ))}
         </div>
-        <p className="text-white text-xs mt-4">Vyber správnu výživu!</p>
+        <p className="text-white text-xs mt-4">Vyber správnou výživu!</p>
       </div>,
       // Frame 4: Correct choice
       <div key="t4" className="flex flex-col items-center justify-center h-full">
