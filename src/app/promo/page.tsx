@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef, useCallback } from 'react';
-import html2canvas from 'html2canvas';
 
 // Enervit brand colors
 const ENERVIT_RED = '#e40521';
@@ -290,6 +289,304 @@ function drawFrameToCanvas(
   }
 }
 
+// Pure Canvas rendering for Story graphics
+function drawStoryToCanvas(
+  ctx: CanvasRenderingContext2D,
+  variant: PromoVariant,
+  score: string,
+  rating: string,
+  width: number,
+  height: number
+) {
+  // Background gradient
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, '#1e3a5f');
+  gradient.addColorStop(0.5, '#1e40af');
+  gradient.addColorStop(1, '#1e3a5f');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, width, height);
+
+  // Scanlines
+  ctx.fillStyle = 'rgba(0,0,0,0.05)';
+  for (let y = 0; y < height; y += 4) {
+    ctx.fillRect(0, y, width, 2);
+  }
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const drawText = (text: string, x: number, y: number, color: string, size: number, bold = false) => {
+    ctx.fillStyle = color;
+    ctx.font = `${bold ? 'bold ' : ''}${size}px "Press Start 2P", monospace`;
+    ctx.fillText(text, x, y);
+  };
+
+  const drawLogo = (x: number, y: number, scale = 1) => {
+    ctx.fillStyle = ENERVIT_RED;
+    ctx.beginPath();
+    ctx.roundRect(x - 100*scale, y - 20*scale, 80*scale, 40*scale, 4);
+    ctx.fill();
+    ctx.strokeStyle = '#ff5566';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    drawText('ENERVIT', x - 60*scale, y, '#ffffff', 12*scale, true);
+
+    drawText('×', x, y, '#9ca3af', 20*scale);
+
+    ctx.fillStyle = JIZ_BLUE;
+    ctx.beginPath();
+    ctx.roundRect(x + 20*scale, y - 20*scale, 70*scale, 40*scale, 4);
+    ctx.fill();
+    ctx.strokeStyle = '#4da6ff';
+    ctx.stroke();
+    drawText('JIZ', x + 40*scale, y, '#fde047', 10*scale, true);
+    drawText('50', x + 70*scale, y, '#ffffff', 10*scale, true);
+  };
+
+  const drawSkier = (x: number, y: number, scale = 1) => {
+    ctx.fillStyle = ENERVIT_RED;
+    ctx.beginPath();
+    ctx.ellipse(x, y - 45*scale, 10*scale, 6*scale, 0, Math.PI, 0);
+    ctx.fill();
+    ctx.fillStyle = '#fef3c7';
+    ctx.beginPath();
+    ctx.arc(x, y - 35*scale, 8*scale, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = ENERVIT_RED;
+    ctx.fillRect(x - 10*scale, y - 24*scale, 20*scale, 28*scale);
+    ctx.fillStyle = '#1e3a8a';
+    ctx.fillRect(x - 7*scale, y + 4*scale, 14*scale, 20*scale);
+    ctx.fillStyle = ENERVIT_RED;
+    ctx.beginPath();
+    ctx.roundRect(x - 28*scale, y + 26*scale, 56*scale, 6*scale, 3);
+    ctx.fill();
+    ctx.fillStyle = '#6b7280';
+    ctx.fillRect(x - 20*scale, y - 18*scale, 2*scale, 48*scale);
+    ctx.fillRect(x + 18*scale, y - 18*scale, 2*scale, 48*scale);
+  };
+
+  const cx = width / 2;
+
+  if (variant === 'story-challenge') {
+    // Challenge variant
+    drawLogo(cx, height * 0.08, 1.2);
+    drawText('⚡ VÝZVA ⚡', cx, height * 0.18, '#fde047', 28);
+    drawText('Kolik správných voleb', cx, height * 0.24, '#ffffff', 16);
+    drawText('zvládneš ty?', cx, height * 0.28, '#ffffff', 16);
+
+    // Score box
+    ctx.fillStyle = 'rgba(31, 41, 55, 0.8)';
+    ctx.strokeStyle = '#4b5563';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.roundRect(cx - 140, height * 0.34, 280, 180, 12);
+    ctx.fill();
+    ctx.stroke();
+
+    drawText('MŮJ VÝSLEDEK:', cx, height * 0.40, '#9ca3af', 14);
+    drawText(score + ' ✓', cx, height * 0.48, '#22c55e', 42, true);
+    drawText(rating, cx, height * 0.56, '#fde047', 18);
+
+    // Title
+    ctx.shadowColor = ENERVIT_RED;
+    ctx.shadowBlur = 15;
+    drawText('FUEL THE RACE', cx, height * 0.68, ENERVIT_RED, 36, true);
+    ctx.shadowBlur = 0;
+
+    // CTA button
+    ctx.fillStyle = ENERVIT_RED;
+    ctx.beginPath();
+    ctx.roundRect(cx - 120, height * 0.76, 240, 60, 8);
+    ctx.fill();
+    drawText('🏆 PŘEKONEJ MĚ!', cx, height * 0.79, '#ffffff', 16, true);
+
+    drawText('⬆️ SWIPE UP ⬆️', cx, height * 0.88, '#ffffff', 18);
+  } else {
+    // Play variant
+    drawLogo(cx, height * 0.08, 1.2);
+    drawSkier(cx, height * 0.22, 1.8);
+
+    ctx.shadowColor = ENERVIT_RED;
+    ctx.shadowBlur = 15;
+    drawText('FUEL THE RACE', cx, height * 0.42, ENERVIT_RED, 40, true);
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillRect(cx - 120, height * 0.45, 240, 2);
+
+    drawText('Zvládneš 50 km se', cx, height * 0.52, '#ffffff', 16);
+    drawText('správnou výživou?', cx, height * 0.56, '#ffffff', 16);
+
+    ctx.fillStyle = ENERVIT_RED;
+    ctx.beginPath();
+    ctx.roundRect(cx - 130, height * 0.64, 260, 60, 8);
+    ctx.fill();
+    drawText('🎮 ZAHRAJ SI TEĎ', cx, height * 0.67, '#ffffff', 16, true);
+
+    drawText('⬆️ SWIPE UP ⬆️', cx, height * 0.78, '#ffffff', 18);
+    drawText('🎁 -15% na enervit.cz', cx, height * 0.88, '#fde047', 14);
+  }
+}
+
+// Pure Canvas rendering for Post graphics
+function drawPostToCanvas(
+  ctx: CanvasRenderingContext2D,
+  variant: PromoVariant,
+  width: number,
+  height: number
+) {
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, '#1e3a5f');
+  gradient.addColorStop(0.5, '#1e40af');
+  gradient.addColorStop(1, '#1e3a5f');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.fillStyle = 'rgba(0,0,0,0.05)';
+  for (let y = 0; y < height; y += 4) {
+    ctx.fillRect(0, y, width, 2);
+  }
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const drawText = (text: string, x: number, y: number, color: string, size: number, bold = false) => {
+    ctx.fillStyle = color;
+    ctx.font = `${bold ? 'bold ' : ''}${size}px "Press Start 2P", monospace`;
+    ctx.fillText(text, x, y);
+  };
+
+  const cx = width / 2;
+
+  if (variant === 'post-edu') {
+    // Educational post
+    drawText('VÍTE, ŽE...? 🤔', cx, height * 0.08, '#ffffff', 24);
+    drawText('Na JIZ50 potřebuješ', cx, height * 0.16, '#ffffff', 14);
+    drawText('doplnit energii minimálně', cx, height * 0.20, '#ffffff', 14);
+    drawText('7× během závodu!', cx, height * 0.24, '#ffffff', 14);
+
+    // Info box
+    ctx.fillStyle = 'rgba(31, 41, 55, 0.8)';
+    ctx.strokeStyle = '#4b5563';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(cx - 180, height * 0.30, 360, 200, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    const stations = [
+      { km: 'KM 0', product: 'PRE SPORT', color: '#22c55e' },
+      { km: 'KM 8', product: 'ISOTONIC', color: '#3b82f6' },
+      { km: 'KM 16', product: 'GEL', color: '#f97316' },
+      { km: 'KM 25', product: 'KOFEIN', color: '#fde047' },
+    ];
+    stations.forEach((s, i) => {
+      const y = height * 0.36 + i * 40;
+      ctx.textAlign = 'left';
+      drawText(s.km, cx - 150, y, '#9ca3af', 12);
+      ctx.textAlign = 'right';
+      drawText('→ ' + s.product, cx + 150, y, s.color, 12);
+    });
+    ctx.textAlign = 'center';
+    drawText('...', cx, height * 0.52, '#6b7280', 16);
+
+    drawText('Nauč se to hrou! 🎮', cx, height * 0.62, '#ffffff', 18);
+
+    ctx.shadowColor = ENERVIT_RED;
+    ctx.shadowBlur = 10;
+    drawText('FUEL THE RACE', cx, height * 0.72, ENERVIT_RED, 28, true);
+    ctx.shadowBlur = 0;
+
+    // Logos
+    ctx.fillStyle = ENERVIT_RED;
+    ctx.beginPath();
+    ctx.roundRect(cx - 100, height * 0.80, 70, 30, 4);
+    ctx.fill();
+    drawText('ENERVIT', cx - 65, height * 0.82, '#ffffff', 8, true);
+
+    drawText('×', cx, height * 0.82, '#9ca3af', 14);
+
+    ctx.fillStyle = JIZ_BLUE;
+    ctx.beginPath();
+    ctx.roundRect(cx + 30, height * 0.80, 70, 30, 4);
+    ctx.fill();
+    drawText('JIZ50', cx + 65, height * 0.82, '#ffffff', 8, true);
+
+    drawText('▶ Link v bio', cx, height * 0.92, '#9ca3af', 12);
+  } else {
+    // Launch post
+    ctx.fillStyle = ENERVIT_RED;
+    ctx.beginPath();
+    ctx.roundRect(cx - 80, height * 0.04, 60, 30, 4);
+    ctx.fill();
+    drawText('ENERVIT', cx - 50, height * 0.06, '#ffffff', 8, true);
+
+    drawText('×', cx, height * 0.06, '#9ca3af', 14);
+
+    ctx.fillStyle = JIZ_BLUE;
+    ctx.beginPath();
+    ctx.roundRect(cx + 20, height * 0.04, 60, 30, 4);
+    ctx.fill();
+    drawText('JIZ50', cx + 50, height * 0.06, '#ffffff', 8, true);
+
+    ctx.shadowColor = ENERVIT_RED;
+    ctx.shadowBlur = 12;
+    drawText('FUEL THE RACE', cx, height * 0.16, ENERVIT_RED, 32, true);
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillRect(cx - 100, height * 0.19, 200, 2);
+
+    // Game preview box
+    ctx.fillStyle = '#1f2937';
+    ctx.strokeStyle = '#4b5563';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.roundRect(cx - 160, height * 0.24, 320, 180, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    drawText('🎮 RETRO GAME', cx, height * 0.28, '#9ca3af', 12);
+
+    // Mini game scene
+    const skyGradient = ctx.createLinearGradient(0, height * 0.32, 0, height * 0.50);
+    skyGradient.addColorStop(0, '#38bdf8');
+    skyGradient.addColorStop(1, '#0284c7');
+    ctx.fillStyle = skyGradient;
+    ctx.beginPath();
+    ctx.roundRect(cx - 140, height * 0.32, 280, 120, 4);
+    ctx.fill();
+
+    // Snow
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.fillRect(cx - 140, height * 0.46, 280, 20);
+
+    // Mountains
+    ctx.fillStyle = '#94a3b8';
+    ctx.beginPath();
+    ctx.moveTo(cx - 100, height * 0.46);
+    ctx.lineTo(cx - 60, height * 0.36);
+    ctx.lineTo(cx - 20, height * 0.46);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(cx + 20, height * 0.46);
+    ctx.lineTo(cx + 70, height * 0.34);
+    ctx.lineTo(cx + 120, height * 0.46);
+    ctx.fill();
+
+    // Mini skier
+    ctx.fillStyle = ENERVIT_RED;
+    ctx.fillRect(cx - 5, height * 0.43, 10, 14);
+
+    drawText('Zvol správnou výživu', cx, height * 0.56, '#ffffff', 14);
+    drawText('na 7 stanicích a', cx, height * 0.60, '#ffffff', 14);
+    drawText('dojeď do cíle! 🏁', cx, height * 0.64, '#ffffff', 14);
+
+    drawText('🎁 BONUS: -15% sleva', cx, height * 0.72, '#fde047', 14);
+    drawText('▶ Link v bio', cx, height * 0.80, '#9ca3af', 14);
+  }
+}
+
 type PromoVariant = 'story-play' | 'story-challenge' | 'post-launch' | 'post-edu';
 type ReelsVariant = 'teaser' | 'challenge' | 'howto';
 type TabType = 'graphics' | 'reels';
@@ -515,26 +812,33 @@ export default function PromoPage() {
     return { width: 1080, height: 1080 };
   };
 
+  // Download image using pure Canvas rendering (no html2canvas - avoids lab() color issues)
   const downloadImage = useCallback(async () => {
-    if (!previewRef.current || isDownloading) return;
+    if (isDownloading) return;
 
     setIsDownloading(true);
 
     try {
-      const element = previewRef.current;
-      const { width } = getDimensions();
+      const { width, height } = getDimensions();
 
-      const currentWidth = element.offsetWidth;
-      const scale = width / currentWidth;
+      // Load font first
+      try {
+        await document.fonts.load('20px "Press Start 2P"');
+      } catch {
+        console.log('Font already loaded');
+      }
 
-      const canvas = await html2canvas(element, {
-        scale: scale,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: null,
-        width: currentWidth,
-        height: element.offsetHeight,
-      });
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d')!;
+
+      // Draw using pure canvas based on variant
+      if (activeVariant.startsWith('story')) {
+        drawStoryToCanvas(ctx, activeVariant, score, rating, width, height);
+      } else {
+        drawPostToCanvas(ctx, activeVariant, width, height);
+      }
 
       const link = document.createElement('a');
       link.download = `${getFilename()}.png`;
@@ -542,27 +846,36 @@ export default function PromoPage() {
       link.click();
     } catch (error) {
       console.error('Download failed:', error);
-      alert('Stiahnutie zlyhalo. Skúste pravý klik → Uložiť obrázok.');
+      alert('Stiahnutie zlyhalo: ' + (error instanceof Error ? error.message : 'Neznáma chyba'));
     } finally {
       setIsDownloading(false);
     }
-  }, [activeVariant, score, isDownloading]);
+  }, [activeVariant, score, rating, isDownloading]);
 
+  // Download Reels frame using pure Canvas rendering
   const downloadReelsFrame = useCallback(async () => {
-    if (!reelsFrameRef.current || isDownloading) return;
+    if (isDownloading) return;
 
     setIsDownloading(true);
 
     try {
-      const element = reelsFrameRef.current;
-      const scale = 1080 / element.offsetWidth;
+      const width = 1080;
+      const height = 1920;
 
-      const canvas = await html2canvas(element, {
-        scale: scale,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: null,
-      });
+      // Load font first
+      try {
+        await document.fonts.load('20px "Press Start 2P"');
+      } catch {
+        console.log('Font already loaded');
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d')!;
+
+      // Draw using pure canvas
+      drawFrameToCanvas(ctx, activeReels, activeReelsFrame, score, rating, width, height);
 
       const link = document.createElement('a');
       link.download = `fuel-the-race-reels-${activeReels}-frame-${activeReelsFrame + 1}.png`;
@@ -570,10 +883,11 @@ export default function PromoPage() {
       link.click();
     } catch (error) {
       console.error('Download failed:', error);
+      alert('Stiahnutie zlyhalo: ' + (error instanceof Error ? error.message : 'Neznáma chyba'));
     } finally {
       setIsDownloading(false);
     }
-  }, [activeReels, activeReelsFrame, isDownloading]);
+  }, [activeReels, activeReelsFrame, score, rating, isDownloading]);
 
   const copyCaption = useCallback(() => {
     const captions: Record<PromoVariant, string> = {
