@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Mock data storage (will be replaced with Vercel Postgres)
+// Data storage (in production, use Vercel Postgres or KV)
 let leaderboardData = [
   { id: 1, name: 'Jan Novák', timeMs: 125000, correctChoices: 7, createdAt: '2024-01-15T10:00:00Z' },
   { id: 2, name: 'Petra Svobodová', timeMs: 132000, correctChoices: 6, createdAt: '2024-01-14T15:30:00Z' },
@@ -8,6 +8,20 @@ let leaderboardData = [
   { id: 4, name: 'Eva Králová', timeMs: 151000, correctChoices: 5, createdAt: '2024-01-12T14:45:00Z' },
   { id: 5, name: 'Tomáš Černý', timeMs: 163000, correctChoices: 6, createdAt: '2024-01-11T11:20:00Z' },
 ];
+
+// Leads storage - emails collected from the game
+interface Lead {
+  id: number;
+  name: string;
+  email: string;
+  raffleConsent: boolean;
+  createdAt: string;
+}
+
+let leadsData: Lead[] = [];
+
+// Export leads data for the leads endpoint
+export { leadsData };
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -64,8 +78,15 @@ export async function POST(request: NextRequest) {
     leaderboardData.sort((a, b) => a.timeMs - b.timeMs);
     const rank = leaderboardData.findIndex((e) => e.id === newEntry.id) + 1;
 
-    // TODO: Also save to leads table with email and raffleConsent
-    // await saveToLeadsTable({ name, email, raffleConsent });
+    // Save lead (email for later export)
+    const newLead: Lead = {
+      id: leadsData.length + 1,
+      name,
+      email,
+      raffleConsent: raffleConsent || false,
+      createdAt: new Date().toISOString(),
+    };
+    leadsData.push(newLead);
 
     return NextResponse.json({
       success: true,

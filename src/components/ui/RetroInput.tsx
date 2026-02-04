@@ -29,7 +29,7 @@ export function RetroInput({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         required={required}
-        className="bg-white border-2 border-t-gray-600 border-l-gray-600 border-b-white border-r-white px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+        className="bg-white text-gray-900 placeholder-gray-500 border-2 border-t-gray-600 border-l-gray-600 border-b-white border-r-white px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
       />
     </div>
   );

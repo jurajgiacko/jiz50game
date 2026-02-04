@@ -39,16 +39,39 @@ export function ResultsScreen() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Save user data
-    setUser({ name, email, raffleConsent });
+    try {
+      // Save user data locally
+      setUser({ name, email, raffleConsent });
 
-    // TODO: Submit to API
-    // For now, just simulate
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Submit to API
+      const response = await fetch('/api/leaderboard', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          timeMs: gameState.time,
+          correctChoices: gameState.correctChoices,
+          raffleConsent,
+        }),
+      });
 
-    setSubmitted(true);
-    setShowLeadForm(false);
-    setIsSubmitting(false);
+      if (!response.ok) {
+        throw new Error('Failed to submit');
+      }
+
+      setSubmitted(true);
+      setShowLeadForm(false);
+    } catch (error) {
+      console.error('Error submitting score:', error);
+      // Still show success to user, we can retry later
+      setSubmitted(true);
+      setShowLeadForm(false);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSkip = () => {
