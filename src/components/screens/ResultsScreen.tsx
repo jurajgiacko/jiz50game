@@ -23,6 +23,8 @@ export function ResultsScreen() {
   const [submitted, setSubmitted] = useState(false);
   const [showNutritionPlan, setShowNutritionPlan] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [showShareCard, setShowShareCard] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   if (gameState.phase !== 'results') return null;
 
@@ -89,17 +91,33 @@ export function ResultsScreen() {
     setTimeout(() => setCodeCopied(false), 2000);
   };
 
-  const handleShare = (platform: 'facebook' | 'twitter' | 'whatsapp') => {
-    const text = `Dokončil jsem Jizerskou 50 virtuálně za ${formatTime(gameState.time)}! ${gameState.correctChoices}/7 správných voleb. Zkus to taky!`;
-    const url = window.location.href;
+  const getShareText = () => {
+    const ratingEmoji = gameState.correctChoices >= 6 ? '🏆' : gameState.correctChoices >= 4 ? '🥈' : '🎿';
+    return `${ratingEmoji} Mám ${gameState.correctChoices}/7 správných voleb ve hře FUEL THE RACE! Znáš správnou výživu pro Jizerskou 50? Zkus to taky!`;
+  };
+
+  const handleShare = (platform: 'facebook' | 'whatsapp' | 'instagram') => {
+    const text = getShareText();
+    const url = 'https://jiz50.enervit.online';
+
+    if (platform === 'instagram') {
+      // Instagram doesn't have share URL, copy text to clipboard
+      navigator.clipboard.writeText(`${text}\n\n${url}`);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+      return;
+    }
 
     const urls = {
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`,
-      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
-      whatsapp: `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`,
+      whatsapp: `https://wa.me/?text=${encodeURIComponent(text + '\n\n' + url)}`,
     };
 
     window.open(urls[platform], '_blank', 'width=600,height=400');
+  };
+
+  const handleShowShareCard = () => {
+    setShowShareCard(true);
   };
 
   const nutritionPlan = generateNutritionPlan(
@@ -250,30 +268,15 @@ export function ResultsScreen() {
           </div>
         )}
 
-        {/* Share buttons */}
+        {/* Share section */}
         {!showLeadForm && (
           <div className="mb-4">
-            <h3 className="text-gray-400 font-mono text-xs mb-2">SDÍLET VÝSLEDEK:</h3>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleShare('facebook')}
-                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 px-3 text-xs font-mono rounded"
-              >
-                Facebook
-              </button>
-              <button
-                onClick={() => handleShare('twitter')}
-                className="flex-1 bg-sky-500 hover:bg-sky-400 text-white py-2 px-3 text-xs font-mono rounded"
-              >
-                Twitter
-              </button>
-              <button
-                onClick={() => handleShare('whatsapp')}
-                className="flex-1 bg-green-600 hover:bg-green-500 text-white py-2 px-3 text-xs font-mono rounded"
-              >
-                WhatsApp
-              </button>
-            </div>
+            <button
+              onClick={handleShowShareCard}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white py-3 px-4 font-mono font-bold rounded-lg mb-2 flex items-center justify-center gap-2"
+            >
+              📤 SDÍLET VÝSLEDEK
+            </button>
           </div>
         )}
 
@@ -287,6 +290,87 @@ export function ResultsScreen() {
       <p className="text-gray-500 text-xs mt-4 font-mono text-center">
         ENERVIT x JIZERSKÁ 50 - Výživový závod
       </p>
+
+      {/* Share Card Modal */}
+      {showShareCard && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+          <div className="w-full max-w-sm">
+            {/* Share Card */}
+            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-4 border-orange-500 rounded-xl p-6 mb-4 relative overflow-hidden">
+              {/* Background decoration */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl" />
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl" />
+              
+              {/* Content */}
+              <div className="relative z-10">
+                {/* Logo/Title */}
+                <div className="text-center mb-4">
+                  <div className="text-orange-500 font-mono text-xs tracking-widest mb-1">ENERVIT × JIZERSKÁ 50</div>
+                  <div className="text-white font-mono text-2xl font-bold">FUEL THE RACE</div>
+                </div>
+
+                {/* Result */}
+                <div className="bg-gray-800/80 rounded-lg p-4 mb-4 text-center border border-gray-700">
+                  <div className="text-6xl mb-2">
+                    {gameState.correctChoices >= 6 ? '🏆' : gameState.correctChoices >= 4 ? '🥈' : gameState.correctChoices >= 2 ? '🥉' : '🎿'}
+                  </div>
+                  <div 
+                    className="font-mono text-xl font-bold mb-1"
+                    style={{ color: rating.color }}
+                  >
+                    {rating.title}
+                  </div>
+                  <div className="text-white font-mono text-3xl font-bold">
+                    {gameState.correctChoices}<span className="text-gray-500">/7</span>
+                  </div>
+                  <div className="text-gray-400 text-sm mt-1">správných voleb</div>
+                </div>
+
+                {/* Call to action */}
+                <div className="text-center text-gray-400 text-xs font-mono">
+                  Znáš správnou výživu pro Jizerskou 50?
+                </div>
+                <div className="text-center text-orange-400 text-sm font-mono font-bold mt-1">
+                  jiz50.enervit.online
+                </div>
+              </div>
+            </div>
+
+            {/* Share buttons */}
+            <div className="grid grid-cols-3 gap-2 mb-3">
+              <button
+                onClick={() => handleShare('facebook')}
+                className="bg-blue-600 hover:bg-blue-500 text-white py-3 px-2 text-sm font-mono rounded-lg flex flex-col items-center gap-1"
+              >
+                <span className="text-xl">📘</span>
+                <span>Facebook</span>
+              </button>
+              <button
+                onClick={() => handleShare('instagram')}
+                className="bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 hover:from-purple-500 hover:via-pink-500 hover:to-orange-400 text-white py-3 px-2 text-sm font-mono rounded-lg flex flex-col items-center gap-1"
+              >
+                <span className="text-xl">📷</span>
+                <span>{shareCopied ? 'Zkopírováno!' : 'Instagram'}</span>
+              </button>
+              <button
+                onClick={() => handleShare('whatsapp')}
+                className="bg-green-600 hover:bg-green-500 text-white py-3 px-2 text-sm font-mono rounded-lg flex flex-col items-center gap-1"
+              >
+                <span className="text-xl">💬</span>
+                <span>WhatsApp</span>
+              </button>
+            </div>
+
+            {/* Close button */}
+            <button
+              onClick={() => setShowShareCard(false)}
+              className="w-full bg-gray-700 hover:bg-gray-600 text-gray-300 py-2 px-4 font-mono rounded-lg"
+            >
+              ZAVŘÍT
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
