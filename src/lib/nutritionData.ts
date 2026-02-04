@@ -41,32 +41,32 @@ export const nutritionProducts: Record<string, NutritionProduct[]> = {
   station1: [
     {
       id: 'isotonic-1',
-      name: 'ENERVIT ISOTONIC',
+      name: 'ENERVIT ISOTONIC DRINK',
       desc: 'Doplnění tekutin a minerálů',
       correct: true,
       boost: 2,
       explanation:
-        'Výborně! Izotonický nápoj rychle doplní tekutiny a minerály ztracené pocením. Optimální volba v úvodu závodu.',
+        'Výborně! Iontový nápoj pij průběžně BĚHEM závodu a nezapomeň na správné ředění - hypotonické (nápoj je méně hustý než krevní plazma, což pomáhá s rychlejším vstřebáním). Je potřeba pít na každé občerstvovací stanici.',
       benefit: 'Rychlá hydratace, šetrné k žaludku',
     },
     {
       id: 'gel-1',
       name: 'ENERVIT GEL',
-      desc: 'Rychlá energie',
+      desc: 'Velká dávka postupně se uvolňující energie',
       correct: true,
       boost: 1.5,
       explanation:
-        'Dobrá volba! Gel poskytne rychlou dávku energie. V úvodu závodu ale stačí i izotonický nápoj.',
-      benefit: '25g sacharidů, rychlé vstřebání',
+        'Dobrá volba! Gel zabezpečuje průběžné dodávání energie během závodu.',
+      benefit: '25g sacharidů, postupně se uvolňující energie',
     },
     {
       id: 'r2-sport-1',
-      name: 'ENERVIT R2 SPORT',
+      name: 'ENERVIT R2 RECOVERY DRINK',
       desc: 'Regenerační nápoj - příliš brzy!',
       correct: false,
       boost: -2,
       explanation:
-        'R2 SPORT je regenerační nápoj určený pro období PO závodě! Teď potřebuješ energii, ne regeneraci.',
+        'R2 Recovery Drink je regenerační nápoj určený pro období PO závodě! Teď potřebuješ energii, ne regeneraci.',
       benefit: 'Perfektní volba - ale až v cíli!',
     },
   ],
@@ -85,23 +85,23 @@ export const nutritionProducts: Record<string, NutritionProduct[]> = {
     },
     {
       id: 'carbo-bar',
-      name: 'ENERVIT CARBO BAR',
-      desc: 'Sacharidová tyčinka',
+      name: 'ENERVIT CARBO BAR C2:1',
+      desc: 'Energetická bezlepková tyčinka s obsahem 30 gramů sacharidů',
       correct: true,
       boost: 1.5,
       explanation:
-        'Dobrá volba! CARBO BAR dodá sacharidy v pevné formě. Některým závodníkům vyhovuje více než gel.',
-      benefit: 'Delší uvolňování energie, pocit sytosti',
+        'Dobrá volba! CARBO BAR C2:1 dodá sacharidy v kombinaci glukózy a fruktózy odpovídající optimálnímu poměru (2:1) pro maximalizaci příjmu energie z pohledu fyziologických zákonitostí organizmu.',
+      benefit: 'Delší uvolňování energie, velké množství energie v malém objemu',
     },
     {
       id: 'protein-shake',
-      name: 'ENERVIT PROTEIN SHAKE',
+      name: 'ENERVIT PROTEIN 100% Whey Protein',
       desc: 'Protein - špatné načasování',
       correct: false,
       boost: -2,
       explanation:
-        'Protein shake se pomalu vstřebává a zatíží trávení. Během závodu potřebuješ rychlé sacharidy!',
-      benefit: 'Výborný po závodě pro regeneraci svalů',
+        'Během Jizerské 50 potřebuješ především sacharidy - pomalé/rychlé. Whey Proteinové nápoje jsou svým složením vhodné po výkonu.',
+      benefit: 'Whey Protein si dej po závodě, ale hned po dojezdu vypij R2 Recovery Drink a až pak WP ;)',
     },
   ],
 
@@ -109,12 +109,12 @@ export const nutritionProducts: Record<string, NutritionProduct[]> = {
   station3: [
     {
       id: 'gel-competition',
-      name: 'ENERVIT GEL COMPETITION',
+      name: 'ENERVIT GEL s kofeinem',
       desc: 'Gel s kofeinem - boost!',
       correct: true,
       boost: 3,
       explanation:
-        'Skvělá volba! V půlce závodu je kofein ideální pro mentální i fyzický boost. Competition gel má optimální dávku.',
+        'Skvělá volba! V půlce závodu je kofein ideální pro mentální i fyzický boost. 1 gel obsahuje 25 mg kofeinu = ideální kombo v půlce trati.',
       benefit: 'Kofein + sacharidy = dvojitý efekt',
     },
     {
@@ -143,8 +143,8 @@ export const nutritionProducts: Record<string, NutritionProduct[]> = {
   station4: [
     {
       id: 'gel-kofein',
-      name: 'ENERVIT GEL + KOFEIN',
-      desc: 'Energie + kofein na finiš',
+      name: 'ENERVIT GEL s kofeinem',
+      desc: 'Energie + kofein',
       correct: true,
       boost: 2.5,
       explanation:
@@ -154,7 +154,7 @@ export const nutritionProducts: Record<string, NutritionProduct[]> = {
     {
       id: 'gel-4',
       name: 'ENERVIT GEL',
-      desc: 'Rychlá energie',
+      desc: 'Velká dávka postupně se uvolňující energie',
       correct: true,
       boost: 2,
       explanation:
@@ -177,8 +177,8 @@ export const nutritionProducts: Record<string, NutritionProduct[]> = {
   station5: [
     {
       id: 'gel-competition-final',
-      name: 'ENERVIT GEL COMPETITION',
-      desc: 'Poslední dávka energie!',
+      name: 'ENERVIT Liquid Gel Competition s kofeinem',
+      desc: 'Blesková energie na závěr závodu',
       correct: true,
       boost: 3,
       explanation:
@@ -187,8 +187,8 @@ export const nutritionProducts: Record<string, NutritionProduct[]> = {
     },
     {
       id: 'sport-gel',
-      name: 'ENERVIT SPORT GEL',
-      desc: 'Sportovní gel',
+      name: 'ENERVIT GEL',
+      desc: 'Velká dávka postupně se uvolňující energie',
       correct: true,
       boost: 2,
       explanation:
@@ -211,12 +211,12 @@ export const nutritionProducts: Record<string, NutritionProduct[]> = {
   postRace: [
     {
       id: 'r2-sport-final',
-      name: 'ENERVIT R2 SPORT',
+      name: 'ENERVIT R2 Recovery Drink',
       desc: 'Kompletní regenerace - SPRÁVNĚ!',
       correct: true,
       boost: 0,
       explanation:
-        'Perfektní volba! R2 SPORT obsahuje vše pro optimální regeneraci: sacharidy, proteiny a minerály.',
+        'Perfektní volba! R2 Recovery Drink rychle doplní vyčerpané zásoby energie pomocí velkého množství různých druhů sacharidů, přispěje k zachování a růstu (obnově) svalových vláken a opětovně doplní vitamíny.',
       benefit: 'Kompletní regenerace do 30 minut po výkonu',
     },
     {
@@ -314,7 +314,7 @@ export function generateNutritionPlan(
       if (choice.stationIndex === 0) {
         tips.push(`${stationName}: Použij PRE SPORT místo ${choice.productName}`);
       } else if (choice.stationIndex === 6) {
-        tips.push(`${stationName}: Zvol R2 SPORT pro regeneraci`);
+        tips.push(`${stationName}: Zvol R2 Recovery Drink pro regeneraci`);
       } else if (choice.stationIndex === 3 || choice.stationIndex === 5) {
         tips.push(
           `${stationName}: GEL COMPETITION s kofeinem ti dodá extra energii`
